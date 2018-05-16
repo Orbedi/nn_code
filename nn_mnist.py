@@ -1,5 +1,7 @@
 import gzip
-import cPickle
+# import cPickle
+import _pickle as cPickle
+
 
 import tensorflow as tf
 import numpy as np
@@ -36,7 +38,7 @@ def one_hot(x, n):
 
 
 f = gzip.open('mnist.pkl.gz', 'rb')
-train_set, valid_set, test_set = cPickle.load(f)
+train_set, valid_set, test_set = cPickle.load(f, encoding='latin1')
 f.close()
 
 train_x, train_y = train_set
@@ -46,8 +48,8 @@ val_x, val_y = valid_set
 test_x, test_y = test_set
 # ---------------- Visualizing some element of the MNIST dataset --------------
 
-#import matplotlib.cm as cm
-#import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 
 
 #plt.imshow(train_x[57].reshape((28, 28)), cmap=cm.Greys_r)
@@ -58,18 +60,15 @@ train_y = one_hot(train_y, 10)
 val_y_one_hot = one_hot(val_y, 10)
 test_y_one_hot = one_hot(test_y, 10)
 
-# TODO: the neural net!!
-
-
 x = tf.placeholder("float", [None, 784])  # samples
 y_ = tf.placeholder("float", [None, 10])  # labels
 
 # Buenos valores: 50 neuronas, batch_size = 10, 200 iteraciones, 0.5 porciento, 0.5 umbral error
 
-W1 = tf.Variable(np.float32(np.random.rand(784, 5)) * 0.1)
-b1 = tf.Variable(np.float32(np.random.rand(5)) * 0.1)
+W1 = tf.Variable(np.float32(np.random.rand(784, 50)) * 0.1)
+b1 = tf.Variable(np.float32(np.random.rand(50)) * 0.1)
 
-W2 = tf.Variable(np.float32(np.random.rand(5, 10)) * 0.1)
+W2 = tf.Variable(np.float32(np.random.rand(50, 10)) * 0.1)
 b2 = tf.Variable(np.float32(np.random.rand(10)) * 0.1)
 
 h = tf.nn.sigmoid(tf.matmul(x, W1) + b1) # Modelo lineal (logits): tf.matmul(x, W1) + b1
@@ -87,9 +86,9 @@ init = tf.initialize_all_variables()
 sess = tf.Session()  # Iniciamos la sesion
 sess.run(init)
 
-print "----------------------"
-print "   Start training...  "
-print "----------------------"
+print("----------------------")
+print("   Start training...  ")
+print("----------------------")
 
 batch_size = 20
 training_error = 100
@@ -97,8 +96,8 @@ training_error = 100
 graficaError = []
 graficaErrorValidacion = []
 
-for epoch in xrange(100):
-    for jj in xrange(len(train_x) / batch_size):
+for epoch in range(200):
+    for jj in range(int(len(train_x) / batch_size)):
         batch_xs = train_x[jj * batch_size: jj * batch_size + batch_size]
         batch_ys = train_y[jj * batch_size: jj * batch_size + batch_size]
         sess.run(train, feed_dict={x: batch_xs, y_: batch_ys})
@@ -111,12 +110,12 @@ for epoch in xrange(100):
     validation_error = sess.run(loss, feed_dict={x: val_x, y_: val_y_one_hot})
     graficaErrorValidacion.append(validation_error)
 
-    print "Epoch #:", epoch, "Error train: ", training_error
-    print "Epoch #:", epoch, "Error valid: ", validation_error
+    print("Epoch #:", epoch, "Error train: ", training_error)
+    print("Epoch #:", epoch, "Error valid: ", validation_error)
     #result = sess.run(y, feed_dict={x: test_x})  # La 'y' es el modelo
     #for b, r in zip(test_y_one_hot, result):
     #    print b, "-->", r
-    print "----------------------------------------------------------------------------------"
+    print("----------------------------------------------------------------------------------")
 
     if (abs(training_error_old - training_error) < porcentaje(training_error_old)):
         if (training_error < 0.1):
@@ -124,12 +123,10 @@ for epoch in xrange(100):
 
 correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print sess.run(accuracy, feed_dict={x: test_x, y_: one_hot(test_y, 10)})
+print(sess.run(accuracy, feed_dict={x: test_x, y_: one_hot(test_y, 10)}))
 
 x_axis_training_errors = list(range(1, len(graficaError) +1))
-#plt.plot(x_axis_training_errors, graficaError)
-#plt.show()
-
-#plt.plot(x_axis_training_errors, graficaErrorValidacion)
-#plt.show()
+plt.plot(x_axis_training_errors, graficaError)
+plt.plot(x_axis_training_errors, graficaErrorValidacion)
+plt.show()
 

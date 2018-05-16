@@ -23,9 +23,9 @@ np.random.shuffle(data)  # we shuffle the data
 x_data = data[:, 0:4].astype('f4')  # the samples are the four first rows of data
 y_data = one_hot(data[:, 4].astype(int), 3)  # the labels are in the last row. Then we encode them in one hot code
 
-print "\nSome samples..."
+print("\nSome samples...")
 for i in range(20):
-    print x_data[i], " -> ", y_data[i]
+    print(x_data[i], " -> ", y_data[i])
 print
 
 x = tf.placeholder("float", [None, 4])  # samples
@@ -49,20 +49,20 @@ init = tf.initialize_all_variables()
 sess = tf.Session()
 sess.run(init)
 
-print "----------------------"
-print "   Start training...  "
-print "----------------------"
+print("----------------------")
+print("   Start training...  ")
+print("----------------------")
 
 batch_size = 10
 
-for epoch in xrange(500):
-    for jj in xrange(len(x_data) / batch_size):
+for epoch in range(500):
+    for jj in range(len(x_data) / batch_size):
         batch_xs = x_data[jj * batch_size: jj * batch_size + batch_size]
         batch_ys = y_data[jj * batch_size: jj * batch_size + batch_size]
         sess.run(train, feed_dict={x: batch_xs, y_: batch_ys})
 
-    print "Epoch #:", epoch, "Error: ", sess.run(loss, feed_dict={x: batch_xs, y_: batch_ys})
+    print("Epoch #:", epoch, "Error: ", sess.run(loss, feed_dict={x: batch_xs, y_: batch_ys}))
     result = sess.run(y, feed_dict={x: batch_xs})
     for b, r in zip(batch_ys, result):
-        print b, "-->", r
-    print "----------------------------------------------------------------------------------"
+        print(b, "-->", r)
+    print("----------------------------------------------------------------------------------")
