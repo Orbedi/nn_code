@@ -1,18 +1,14 @@
 import gzip
 # import cPickle
 import _pickle as cPickle
-
-
 import tensorflow as tf
 import numpy as np
-
 
 # https://www.apsl.net/blog/2017/12/05/tensor-flow-para-principiantes-i/
 # https://www.tensorflow.org/versions/r1.1/get_started/mnist/pros
 # https://ml4a.github.io/ml4a/es/looking_inside_neural_nets/
 # http://naukas.com/2015/12/09/acertando-quinielas-redes-neuronales/
 # http://ssalva.bitballoon.com/blog/2016-08-30-tensorflow/
-
 
 # Para la convolution:
 # https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/3_NeuralNetworks/convolutional_network.py
@@ -114,19 +110,23 @@ for epoch in range(200):
     print("Epoch #:", epoch, "Error valid: ", validation_error)
     #result = sess.run(y, feed_dict={x: test_x})  # La 'y' es el modelo
     #for b, r in zip(test_y_one_hot, result):
-    #    print b, "-->", r
+    #    print(b, "-->", r)
     print("----------------------------------------------------------------------------------")
 
     if (abs(training_error_old - training_error) < porcentaje(training_error_old)):
-        if (training_error < 0.1):
+        if (training_error < 0.5):
             break
 
+# Precision
 correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 print(sess.run(accuracy, feed_dict={x: test_x, y_: one_hot(test_y, 10)}))
 
-x_axis_training_errors = list(range(1, len(graficaError) +1))
-plt.plot(x_axis_training_errors, graficaError)
-plt.plot(x_axis_training_errors, graficaErrorValidacion)
+# GRAFICA
+plt_train, = plt.plot(graficaError, label='Error entrenamiento')
+plt_valid, = plt.plot(graficaErrorValidacion, label='Error validacion')
+plt.legend(handles=[plt_train,plt_valid])
+plt.xlabel("epoch")
+plt.ylabel("error")
 plt.show()
 
